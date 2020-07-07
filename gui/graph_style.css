@@ -1,0 +1,42 @@
+.node{
+    position: absolute;
+    padding : 20px;
+    background-color: cadetblue;
+    resize : both;
+    width : 400px;
+    height: 500px;
+    cursor : pointer;
+}
+.detail{
+    position: absolute;
+    
+    background-color: cadetblue;
+    resize : both;
+    width : 400px;
+    height: 450px;
+    cursor :pointer;
+    overflow: auto;
+}
+#fileNameInput{
+    margin-top: 50%;
+    margin-left: 0px;
+}
+#bin-graph {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+table{
+    border : none;
+    text-align: center; 
+}
+
+
+td{
+    padding: 5px;
+    background-color: greenyellow;
+}
+th{
+    padding: 5px;
+    background-color: lavender;
+}

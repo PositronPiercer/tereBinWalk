@@ -5,13 +5,20 @@
     <script type = "text/javascript" src = '/jquery-3.5.1.js'></script>
     <script type = "text/javascript" src = '/line.js'></script>
     <script type = "text/javascript" src = '/drag.js'></script>
-    <script type = "text/javascript" src = '/control.js'></script>   
+      
     <link rel = "stylesheet" type = "text/css" href = "graph_style.css">
+    <link rel = "stylesheet" type = "text/css" href = "spinner.css">
 
 
 </head>
 
 <body>
+    <div id = "loadingAnim" class="sk-folding-cube">
+        <div class="sk-cube1 sk-cube"></div>
+        <div class="sk-cube2 sk-cube"></div>
+        <div class="sk-cube4 sk-cube"></div>
+        <div class="sk-cube3 sk-cube"></div>
+      </div>
     <div id = 'bin-graph'>
     
     
@@ -24,6 +31,6 @@
 
 </body>
 
-
+<script type = "text/javascript" src = '/control.js'></script> 
 
 </html>

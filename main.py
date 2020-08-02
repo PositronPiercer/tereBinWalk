@@ -2,6 +2,7 @@ import binwalk
 import os
 import filetype
 import eel
+import magic
 
 eel.init('gui')
 
@@ -65,5 +66,10 @@ def get_data (inputFile):
     print('Scan Complete')
     return nodes
 
-
+@eel.expose
+def extract_file_system (inputFile, outputFolder):
+    if 'squashfs' in magic.from_file(inputFile).lower():
+        print('Extracting squashfs File System')
+        command = 'unsquashfs -f -d ./' + outputFolder + '/ ./' + inputFile
+        os.system(command)
 eel.start('index.html')

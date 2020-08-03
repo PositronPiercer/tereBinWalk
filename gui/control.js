@@ -1,6 +1,10 @@
 console.log('Start')
 //var dragabble_items = []
 var inputReady = false
+const NODES = {
+    DEFAULT : 0,
+    FS : 1
+}
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
@@ -48,6 +52,14 @@ async function extract_file(currentNode, fileName){
 
 }
 
+async function extract_file_system(currentNode, inputFile){
+    document.getElementById('loadingAnim').style.visibility = 'visible'
+    var outputFile = inputFile + '_extracted'
+    var success = await eel.extract_file_system(inputFile, outputFile)
+    document.getElementById('loadingAnim').style.visibility = 'hidden'
+    add_node(currentNode, outputFile, NODES.FS)
+}
+
 async function view_entropy(inputFile){
     document.getElementById('loadingAnim').style.visibility = 'visible'
     console.log('Fetching Entropy')
@@ -56,34 +68,48 @@ async function view_entropy(inputFile){
     document.getElementById('loadingAnim').style.visibility = 'hidden'
     console.log('done')
 }
-async function add_node(currentNode, fileName){
+async function add_node(currentNode, fileName, nodeType){
     /*
     Call python function to perform a binwalk scan on the file and add the signatures as children to the current node
     */
+    nodeType = nodeType || NODES.DEFAULT
+
     document.getElementById('loadingAnim').style.visibility = 'visible'
     console.log('Obtaining Signatures')
     var sigs = await eel.get_data(fileName)()
     console.log('Received Signatures')
-    var oneFile = false
-    if(sigs.length == 1) oneFile = true
-    
-    //create node
-    //var nodeHtml = '<div class = "node" id = "' + fileName + '"><table><thead><tr><th>' + fileName + '</th></tr></thead>'
-    var nodeHtml = '<div class = "node" id = "' + fileName + '"><table><tr><th colspan = "2">' + fileName + '</th></tr>'
-    nodeHtml += '<tr><td colspan = "2">' + '<button class = "btn" onclick = "view_entropy(\'' + fileName + '\')">Entropy</button>' + '</td></tr></table><div class = "detail"><table>'
-    sigs.forEach(sig => {
-        let sigHtml = '<tr><td>' + sig.description + '</td><td> <button class = "btn" id = "' + sig.description + '"'
-        if(oneFile){
-            sigHtml += 'onclick = "extract_file(\'' + fileName + '\',\'' + fileName + '\')"> Extract'
-        }
-        else{
-            sigHtml += 'onclick = "slice_out(\'' + fileName + '\',\'' + fileName + '\', ' + sig.offset +', ' + sig.size + ')"> Slice out'
-        }
-        sigHtml += '</button></td></tr>'
-        nodeHtml += sigHtml
-    });
-    nodeHtml += '</table></div></div>'
-    document.getElementById('bin-graph').innerHTML += nodeHtml 
+    if (nodeType == NODES.DEFAULT){
+        var oneFile = false
+        if(sigs.length == 1) oneFile = true
+        
+        //create node
+        //var nodeHtml = '<div class = "node" id = "' + fileName + '"><table><thead><tr><th>' + fileName + '</th></tr></thead>'
+        var nodeHtml = '<div class = "node" id = "' + fileName + '"><table><tr><th colspan = "2">' + fileName + '</th></tr>'
+        nodeHtml += '<tr><td colspan = "2">' + '<button class = "btn" onclick = "view_entropy(\'' + fileName + '\')">Entropy</button>' + '</td></tr></table><div class = "detail"><table>'
+        sigs.forEach(sig => {
+            let sigHtml = '<tr><td>' + sig.description + '</td><td> <button class = "btn" id = "' + sig.description + '"'
+            if(oneFile){
+                sigHtml += 'onclick = "extract_file(\'' + fileName + '\',\'' + fileName + '\')"> Extract'
+            }
+            else{
+                sigHtml += 'onclick = "slice_out(\'' + fileName + '\',\'' + fileName + '\', ' + sig.offset +', ' + sig.size + ')"> Slice out'
+            }
+            sigHtml += '</button></td></tr>'
+            if(oneFile){
+                sigHtml += '<tr> <td> <button class = "btn" onclick = "extract_file_system(\'' + fileName + '\',\'' + fileName + '\')"> Extract FS</button></td></tr>'
+            }
+            nodeHtml += sigHtml
+        });
+        nodeHtml += '</table></div></div>'
+        document.getElementById('bin-graph').innerHTML += nodeHtml
+    }
+    else if(nodeType == NODES.FS){
+        var nodeHtml = '<div class = "node" id = "' + fileName + '"><table><tr><th>' + fileName + '</th></tr>'
+        nodeHtml += '<tr><td><button class = "btn" > Open in Explorer </button></td></tr>'
+        nodeHtml += '<tr><td><button class = "btn" > Spawn Shell </button></td></tr>'
+        nodeHtml += '</table></div>'
+        document.getElementById('bin-graph').innerHTML += nodeHtml
+    } 
     
 
     //add lines
@@ -96,6 +122,6 @@ async function add_node(currentNode, fileName){
     document.getElementById('loadingAnim').style.visibility = 'hidden'
 }
 
-add_node('', 'dlink_router.bin')
+add_node('', 'rr.bin')
 
 

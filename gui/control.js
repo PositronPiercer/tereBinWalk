@@ -5,6 +5,7 @@ const NODES = {
     DEFAULT : 0,
     FS : 1
 }
+ROOT_FS_PATH = ''
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
@@ -55,9 +56,20 @@ async function extract_file(currentNode, fileName){
 async function extract_file_system(currentNode, inputFile){
     document.getElementById('loadingAnim').style.visibility = 'visible'
     var outputFile = inputFile + '_extracted'
-    var success = await eel.extract_file_system(inputFile, outputFile)
+    ROOT_FS_PATH = await eel.extract_file_system(inputFile, outputFile)()
+    console.log('Root FS : ' + ROOT_FS_PATH )
     document.getElementById('loadingAnim').style.visibility = 'hidden'
     add_node(currentNode, outputFile, NODES.FS)
+}
+
+async function spawn_shell(){
+    var success = await eel.spawn_shell(ROOT_FS_PATH)()
+}
+async function create_vm(){
+    var success = await eel.create_vm()()
+}
+async function open_in_explorer(){
+    var success = await eel.open_in_explorer(ROOT_FS_PATH)()
 }
 
 async function view_entropy(inputFile){
@@ -105,8 +117,9 @@ async function add_node(currentNode, fileName, nodeType){
     }
     else if(nodeType == NODES.FS){
         var nodeHtml = '<div class = "node" id = "' + fileName + '"><table><tr><th>' + fileName + '</th></tr>'
-        nodeHtml += '<tr><td><button class = "btn" > Open in Explorer </button></td></tr>'
-        nodeHtml += '<tr><td><button class = "btn" > Spawn Shell </button></td></tr>'
+        nodeHtml += '<tr><td><button class = "btn" onclick = "open_in_explorer()" > Open in Explorer </button></td></tr>'
+        nodeHtml += '<tr><td><button class = "btn" onclick = "spawn_shell()" > Spawn Shell </button></td></tr>'
+        nodeHtml += '<tr><td><button class = "btn" onclick = "start_vm()" > Create VM </button></td></tr>'
         nodeHtml += '</table></div>'
         document.getElementById('bin-graph').innerHTML += nodeHtml
     } 
